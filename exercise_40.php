@@ -14,6 +14,17 @@
     $playas = array("Los Angeles", "patanemo", "Los Corales");
 
     echo "Me gustan las playas de " . $playas[0] . " , " .$playas[1] . " y " . $playas[2] . ".";
+    echo "<br>";
+    echo "<br>";
+
+    /* Arreglos asociativos u objetos */
+
+    $edades = array("Carla" => "65", "Jose" => "35", "Pedro" => "15");
+
+    foreach($edades as $x => $x_valor) {
+      echo "Key=" . $x . " , Value=" . $x_valor;
+      echo "<br>";
+    }
   ?>
 </body>
 </html>
