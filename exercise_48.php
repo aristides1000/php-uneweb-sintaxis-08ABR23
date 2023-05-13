@@ -22,20 +22,27 @@
 
     // Vamos a definir las variables y vamos a colocarles valores vacios
 
-    $nombre = $email = $ciudad = $direccion = $genero = "";
-    $errorNombre = $errorEmail = $errorGenero = "";
+    $nombre = $email = $ciudad = $direccion = $genero = $sitioWeb = "";
+    $errorNombre = $errorEmail = $errorGenero = $errorSitioWeb = "";
 
     if ($_SERVER["REQUEST_METHOD"] == "POST") {
       if (empty($_POST["nombre"])) {
         $errorNombre = "El nombre es requerido";
       } else {
         $nombre = prueba_input($_POST["nombre"]);
+        // Verificar si el nombre solo contiene letras y espacios en blanco
+        if (!preg_match("/^[a-zA-Z-' ]*$/", $nombre)) {
+          $errorNombre = "Sólo se permiten letras y espacios en blanco";
+        }
       }
 
       if (empty($_POST["email"])) {
         $errorEmail = "El email es requerido";
       } else {
         $email = prueba_input($_POST["email"]);
+        if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
+          $errorEmail = "El formato del email es incorrecto";
+        }
       }
 
       if (!empty($_POST["ciudad"])) {
@@ -44,6 +51,14 @@
 
       if (!empty($_POST["direccion"])) {
         $direccion = prueba_input($_POST["direccion"]);
+      }
+
+      if (!empty($_POST["sitioWeb"])) {
+        $sitioWeb = prueba_input($_POST["sitioWeb"]);
+        // Verificar que la direccion URl sea válida
+        if (!preg_match("/\b(?:(?:https?|ftp):\/\/|www\.)[-a-z0-9+&@#\/%?=~_|!:,.;]*[-a-z0-9+&@#\/%?=~_|]/i", $sitioWeb)) {
+          $errorSitioWeb = "URL invalido";
+        }
       }
 
       if (empty($_POST["genero"])) {
@@ -64,18 +79,25 @@
   <h1>Ejemplo de validación de formularios en PHP</h1>
   <p><span class="error">* campo requerido</span></p>
   <form method="post" action="<?=htmlspecialchars($_SERVER["PHP_SELF"]);?>">
-    Nombre: <input type="text" name="nombre">
+    Nombre: <input type="text" name="nombre" value="<?= $nombre ?>">
     <span class="error">* <?= $errorNombre ?></span>
     <br><br>
-    E-mail: <input type="text" name="email">
+    E-mail: <input type="text" name="email" value="<?= $email ?>">
     <span class="error">* <?= $errorEmail ?></span>
     <br><br>
-    Ciudad: <input type="text" name="ciudad"><br><br>
-    Dirección: <textarea name="direccion" rows="10" cols="50"></textarea>
+    Ciudad: <input type="text" name="ciudad" value="<?= $ciudad ?>"><br><br>
+    Dirección: <textarea name="direccion" rows="10" cols="50"><?= $direccion ?></textarea>
+    <br><br>
+    Sitio Web: <input type="text" name="sitioWeb" value="<?= $sitioWeb ?>">
+    <span class="error"><?= $errorSitioWeb ?></span>
     <br><br>
     Genero: 
-    <input type="radio" name="genero" value="mujer">Mujer
-    <input type="radio" name="genero" value="hombre">Hombre
+    <input type="radio" name="genero"
+    <?php if(isset($genero) && $genero =="mujer") echo "checked" ?>
+    value="mujer">Mujer
+    <input type="radio" name="genero"
+    <?php if(isset($genero) && $genero =="hombre") echo "checked" ?>
+    value="hombre">Hombre
     <span class="error">* <?= $errorGenero ?></span>
     <br><br>
     <input type="submit" name="submit" value="Submit">
@@ -90,6 +112,8 @@
     echo $ciudad;
     echo "<br>";
     echo $direccion;
+    echo "<br>";
+    echo $sitioWeb;
     echo "<br>";
     echo $genero;
   ?>
